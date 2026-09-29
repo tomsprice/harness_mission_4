@@ -1,0 +1,44 @@
+pipeline:
+  name: simple_ci_pipeline
+  identifier: simple_ci_pipeline
+  projectIdentifier: Cohort45
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: project_level_github_connector
+        repoName: harness_mission_4
+        build: <+input>
+  stages:
+    - stage:
+        name: Build Stage
+        identifier: Build_Stage
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          caching:
+            enabled: true
+            override: true
+          buildIntelligence:
+            enabled: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: tom_build_farm_connector
+              namespace: harness-delegate-ng
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Run_1
+                  identifier: Run_1
+                  spec:
+                    connectorRef: project_level_dockerhub_connector
+                    image: bash
+                    shell: Sh
+                    command: sh run.sh
